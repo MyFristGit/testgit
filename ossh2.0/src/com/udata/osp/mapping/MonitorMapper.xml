@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.udata.osp.dao.MonitorMapper" >
+ 
+  <insert id="saveLogin" parameterType="Map">  
+	    INSERT INTO ossh_monitor_login  
+	    (user_id,user_name,ip,time)  
+	    VALUES  
+	    (#{user_id}, #{user_name}, #{ip}, #{time}) 
+  </insert> 
+  
+  <insert id="saveDoServer" >  
+	    INSERT INTO ossh_monitor_service
+	    (user_id,user_name,time,ip,serviceId)  
+	    VALUES  
+	    (#{0}, #{1}, #{2}, #{3},#{4}) 
+  </insert> 
+  
+  
+  
+  
+  <update id="serviceAddOne"  >  
+    
+        update ossh_service  set  
+              uses_count=uses_count+1
+           where service_id=#{0};  
+    
+   </update>  
+  
+  
+
+ <cache    eviction="LRU"   flushInterval="6000000" size="512" readOnly="true"/> 
+ 
+  
+</mapper>

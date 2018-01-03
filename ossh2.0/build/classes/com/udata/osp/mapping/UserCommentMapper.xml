@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.udata.osp.dao.UserCommentMapper" >
+
+
+  <select id="haveComment" resultType="Integer"  parameterType="java.lang.String">
+    select  count(*) from  ossh_user_comment
+     where user_id = #{0} AND service_id = #{1}
+  </select>
+  
+   <insert id="insertUserComment" parameterType="com.udata.osp.entity.UserComment" >
+    insert into ossh_user_comment (id,user_id,service_id,comment,create_time,create_time_string)
+    values (#{id,jdbcType=VARCHAR},#{user_id,jdbcType=VARCHAR}, #{service_id,jdbcType=VARCHAR}, #{comment,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, #{create_time_string,jdbcType=VARCHAR})
+   </insert>
+   
+    <select id="getCommentsByServiceId" resultType="com.udata.osp.entity.UserComment"  parameterType="java.lang.String">
+    select  * from  ossh_user_comment
+     where  service_id = #{1}
+    </select>
+  
+    <select id="getCommentsAndUserByServiceId" resultType="java.util.HashMap"  parameterType="java.lang.String">
+       select  u.Name  ,   c.comment,c.create_time_string  ,c.create_time  from ossh_user_comment  c,sys_user  u  where  u.USER_ID=c.user_id  and c.service_id=#{0}  order by create_time  desc
+    </select>
+    
+   
+    <delete id="deleteComment" parameterType="java.lang.Integer" >
+    delete from ossh_user_comment
+    where user_id = #{0} AND service_id = #{1}
+  </delete>
+  
+     <cache    eviction="LRU"   flushInterval="60000" size="512" readOnly="true"/>
+  
+</mapper>

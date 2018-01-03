@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.udata.osp.dao.UserCollectionMapper" >
+
+   <select id="selectUserCollection" resultType="com.udata.osp.entity.UserCollection"  parameterType="java.lang.String">
+    select  * from  ossh_user_collection
+     where user_id = #{0} AND service_id = #{1}
+  </select>
+  
+  
+   <select id="selectServiceCollection" resultType="Integer"  parameterType="java.lang.String">
+    select  count(*) from  ossh_user_collection
+     where service_id = #{0} 
+  </select>
+  
+   <select id="haveCollection" resultType="Integer"  parameterType="java.lang.String">
+    select  count(*) from  ossh_user_collection
+     where user_id = #{0} AND service_id = #{1}
+  </select>
+  
+  
+   <insert id="insertUserCollection" parameterType="com.udata.osp.entity.UserCollection" >
+    insert into ossh_user_collection (user_id,service_id)
+    values (#{user_id,jdbcType=VARCHAR}, #{service_id,jdbcType=VARCHAR})
+  </insert>
+  
+  
+   <delete id="deleteCollection" parameterType="java.lang.Integer" >
+    delete from ossh_user_collection
+    where user_id = #{0} AND service_id = #{1}
+  </delete>
+     <cache    eviction="LRU"   flushInterval="60000" size="512" readOnly="true"/>
+  
+</mapper>

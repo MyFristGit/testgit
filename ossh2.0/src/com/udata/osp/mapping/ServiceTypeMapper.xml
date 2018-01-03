@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.udata.osp.dao.ServiceTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.udata.osp.entity.ServiceType" >
+    <id column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="type_name" property="typeName" jdbcType="VARCHAR" />
+    <result column="type_author" property="typeAuthor" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="DATE" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="fw_role_id" property="fwRoleId" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.udata.osp.entity.ServiceType" extends="BaseResultMap" >
+    <result column="type_icon" property="typeIcon" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    type_id, type_name, type_author, create_time, parent_id, fw_role_id
+  </sql>
+  <sql id="Blob_Column_List" >
+    type_icon
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ossh_service_type
+    where type_id = #{typeId,jdbcType=INTEGER}
+  </select>
+  
+   <select id="getServiceTypeByUserId" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+  		SELECT os.type_id,max(ost.type_name)type_name
+			from ossh_user_role our 
+			LEFT JOIN ossh_service os 
+			ON our.role_id = os.role_id 
+			LEFT JOIN ossh_service_type ost ON os.type_id = ost.type_id
+			where our.user_id=#{userId} 
+			and ost.type_name is not null 
+			GROUP BY os.type_id 
+  </select>
+  
+    <select id="getMycollectTypeByUserId" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+  		SELECT os.type_id,max(ost.type_name)type_name
+			from ossh_user_collection c 
+			LEFT JOIN ossh_service os 
+			ON c.service_id = os.service_id 
+			LEFT JOIN ossh_service_type ost ON os.type_id = ost.type_id
+			where c.user_id=#{userId}  
+			and ost.type_name is not null 
+			GROUP BY os.type_id 
+  </select>
+  
+  
+ 
+  <select id="getServiceTypeList" resultMap="ResultMapWithBLOBs" >  
+    select 
+  	 st.type_id, max(st.type_name)type_name 
+    from 
+    ossh_service_type st 
+	LEFT JOIN ossh_service os 
+	on st.type_id = os.type_id 
+	where os.service_id is not null 
+	GROUP BY st.type_id 
+	ORDER BY os.type_id 
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ossh_service_type
+    where type_id = #{typeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.udata.osp.entity.ServiceType" >
+    insert into ossh_service_type (type_id, type_name, type_author, 
+      create_time, parent_id, fw_role_id, 
+      type_icon)
+    values (#{typeId,jdbcType=INTEGER}, #{typeName,jdbcType=VARCHAR}, #{typeAuthor,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=DATE}, #{parentId,jdbcType=INTEGER}, #{fwRoleId,jdbcType=VARCHAR}, 
+      #{typeIcon,jdbcType=LONGVARBINARY})
+  </insert>
+  <insert id="insertSelective" parameterType="com.udata.osp.entity.ServiceType" >
+    insert into ossh_service_type
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="typeId != null" >
+        type_id,
+      </if>
+      <if test="typeName != null" >
+        type_name,
+      </if>
+      <if test="typeAuthor != null" >
+        type_author,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="fwRoleId != null" >
+        fw_role_id,
+      </if>
+      <if test="typeIcon != null" >
+        type_icon,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="typeId != null" >
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="typeName != null" >
+        #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="typeAuthor != null" >
+        #{typeAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=DATE},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="fwRoleId != null" >
+        #{fwRoleId,jdbcType=VARCHAR},
+      </if>
+      <if test="typeIcon != null" >
+        #{typeIcon,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.udata.osp.entity.ServiceType" >
+    update ossh_service_type
+    <set >
+      <if test="typeName != null" >
+        type_name = #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="typeAuthor != null" >
+        type_author = #{typeAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="fwRoleId != null" >
+        fw_role_id = #{fwRoleId,jdbcType=VARCHAR},
+      </if>
+      <if test="typeIcon != null" >
+        type_icon = #{typeIcon,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where type_id = #{typeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.udata.osp.entity.ServiceType" >
+    update ossh_service_type
+    set type_name = #{typeName,jdbcType=VARCHAR},
+      type_author = #{typeAuthor,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=DATE},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      fw_role_id = #{fwRoleId,jdbcType=VARCHAR},
+      type_icon = #{typeIcon,jdbcType=LONGVARBINARY}
+    where type_id = #{typeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.udata.osp.entity.ServiceType" >
+    update ossh_service_type
+    set type_name = #{typeName,jdbcType=VARCHAR},
+      type_author = #{typeAuthor,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=DATE},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      fw_role_id = #{fwRoleId,jdbcType=VARCHAR}
+    where type_id = #{typeId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getBackLogServiceTypeByUserId"  resultMap="ResultMapWithBLOBs">
+		SELECT ost.type_id, ost.type_name, ost.type_author, 
+      	ost.create_time, ost.parent_id, ost.fw_role_id, 
+      	ost.type_icon  
+		from ossh_backlog_service bs 
+		LEFT JOIN ossh_service os 
+		ON bs.appName = os.service_name 
+		LEFT JOIN ossh_service_type ost ON os.type_id = ost.type_id where bs.userid=#{0}
+		GROUP BY ost.type_name
+	</select>
+	   <cache    eviction="LRU"   flushInterval="1200000" size="512" readOnly="true"/>
+</mapper>

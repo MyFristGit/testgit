@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.udata.osp.dao.UserThumbMapper" >
+
+   <select id="selectUserThumb" resultType="com.udata.osp.entity.UserThumb"  parameterType="java.lang.String">
+    select  * from  user_thumb
+     where user_id = #{0} AND service_id = #{1}
+  </select>
+  
+  
+   <select id="selectServicePraise" resultType="Integer"  parameterType="java.lang.String">
+    select  count(*) from  user_thumb
+     where service_id = #{0} 
+  </select>
+  
+   <select id="havePraise" resultType="Integer"  parameterType="java.lang.String">
+    select  count(*) from  user_thumb
+     where user_id = #{0} AND service_id = #{1}
+  </select>
+  
+  
+   <insert id="insertUserThumb" parameterType="com.udata.osp.entity.UserThumb" >
+    insert into user_thumb (user_id,service_id)
+    values (#{user_id,jdbcType=VARCHAR}, #{service_id,jdbcType=VARCHAR})
+  </insert>
+  
+   <delete id="deleteUserThumb" parameterType="java.lang.Integer" >
+    delete from user_thumb
+    where user_id = #{0} AND service_id = #{1}
+  </delete>
+  
+  
+   <select id="selectServiceCollection" resultType="Integer"  parameterType="java.lang.String">
+    select  count(*) from  ossh_user_collection
+     where service_id = #{0} 
+  </select>
+  
+   <update id="updateCollectionCount"  >
+	    update ossh_service
+	    set collection_count = #{1}
+	    where service_id = #{0}
+   </update>
+      <cache    eviction="LRU"   flushInterval="60000" size="512" readOnly="true"/>
+  
+</mapper>

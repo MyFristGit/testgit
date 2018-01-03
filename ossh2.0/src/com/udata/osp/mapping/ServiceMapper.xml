@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.udata.osp.dao.ServiceMapper" >
+ 
+  <resultMap id="BaseResultMap" type="com.udata.osp.entity.Service" >
+    <id column="service_id" property="serviceId" jdbcType="INTEGER" />
+    <result column="service_name" property="serviceName" jdbcType="VARCHAR" />
+    <result column="service_adress" property="serviceAdress" jdbcType="VARCHAR" />
+    <result column="service_praise_number" property="servicePraiseNumber" jdbcType="INTEGER" />
+    <result column="service_use_number" property="serviceUseNumber" jdbcType="INTEGER" />
+    <result column="service_browse_number" property="serviceBrowseNumber" jdbcType="INTEGER" />
+    <result column="service_create_time" property="serviceCreateTime" jdbcType="DATE" />
+    <result column="service_author" property="serviceAuthor" jdbcType="VARCHAR" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+    
+    <result column="comment_count" property="comment_count" jdbcType="INTEGER" />
+    <result column="praise_count" property="praise_count" jdbcType="INTEGER" />
+    <result column="collection_count" property="collection_count" jdbcType="INTEGER" />
+ 
+   
+   
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.udata.osp.entity.Service" extends="BaseResultMap" >
+    <result column="service_icon" property="serviceIcon" jdbcType="LONGVARBINARY" />
+    <result column="flow_chart" property="flow_chart" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    service_id, service_name, service_adress, service_praise_number, service_use_number, 
+    service_browse_number, service_create_time, service_author, type_id,role_id,
+    service_time,service_detail,comment_count,praise_count,collection_count 
+  </sql>
+  <sql id="Blob_Column_List" >
+    service_icon,flow_chart
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" useCache="true">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ossh_service
+    where service_id = #{serviceId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getServiceByName" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String"  useCache="true">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ossh_service
+    where service_name = #{name,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getServiceZHListByName" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" useCache="true">
+	   select 
+	    <include refid="Base_Column_List" />
+	    ,
+	    <include refid="Blob_Column_List" />
+	    from ossh_service
+	    where service_name = #{name,jdbcType=VARCHAR}
+  </select>
+   <select id="getServiceByRoleId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ossh_service
+    where role_id = #{roleId,jdbcType=VARCHAR}
+   </select>
+   
+  <select id="getServiceZXList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+   
+    from ossh_service 
+    ORDER BY service_create_time DESC LIMIT 10
+  </select>
+  
+  <select id="getServiceZXListNoLimit" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+   
+    from ossh_service 
+    ORDER BY service_create_time DESC 
+  </select>
+  
+   <select id="getServiceZXListByName" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ossh_service 
+     where service_name like #{name,jdbcType=VARCHAR}
+    ORDER BY service_create_time DESC 
+  </select>
+  
+  
+  <select id="getAllServiceListByName" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ossh_service 
+     where service_name like 
+  
+      concat(concat('%',#{name,jdbcType=VARCHAR}),'%') 
+      and   role_id  in(
+		select role_id   from ossh_user_role  where  user_id= #{user_id,jdbcType=VARCHAR})
+    ORDER BY service_create_time DESC 
+  </select>
+  
+  
+  
+  <select id="ByName" resultMap="BaseResultMap" useCache="true">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ossh_service 
+     where service_name like #{name,jdbcType=VARCHAR}
+     ORDER BY service_use_number DESC LIMIT 10
+  </select>
+  
+  <select id="getServiceListByName" resultMap="BaseResultMap"  useCache="true">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ossh_service 
+     where service_name like #{name,jdbcType=VARCHAR}
+     ORDER BY service_use_number DESC 
+  </select>
+  
+
+  
+  
+  
+  <select id="getServiceZHList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ossh_service 
+    ORDER BY collection_count DESC LIMIT 10
+  </select>
+  
+ 
+  <select id="getServiceZHListNoLimit" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ossh_service 
+    ORDER BY collection_count DESC
+  </select>
+
+  
+  
+ <select id="getServiceListByType" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />   
+    from ossh_service where type_id=#{#id} 
+    ORDER BY service_create_time DESC 
+  </select>
+  <select id="getServiceListByTypeAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />   
+    from ossh_service 
+    ORDER BY service_create_time DESC 
+  </select>
+  
+  <select id="getServiceListByTypeAllByUserId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />   
+    from ossh_service 
+    where   type_id in(
+     SELECT os.type_id
+			from ossh_user_role our 
+			LEFT JOIN ossh_service os 
+			ON our.role_id = os.role_id 
+			LEFT JOIN ossh_service_type ost ON os.type_id = ost.type_id
+			where our.user_id=#{0} 
+			and ost.type_name is not null 
+		GROUP BY os.type_id 
+    
+    )
+    ORDER BY service_create_time DESC 
+  </select>
+  
+  <select id="serviceByMyCollectType" resultMap="BaseResultMap">
+   select os.service_id,os.service_name,os.service_adress from ossh_service os 
+	LEFT JOIN ossh_user_collection c 
+	ON os.service_id = c.service_id 
+	WHERE c.user_id=#{1} and os.type_id=#{0} 
+  </select>
+  
+
+  
+
+   <select id="getServiceZXListByType" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+ 
+    from ossh_service where type_id=#{#id} 
+    ORDER BY service_create_time DESC LIMIT 10
+  </select>
+  
+   <select id="getServiceZXListByTypeNoLimit" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+ 
+    from ossh_service where type_id=#{#id} 
+    ORDER BY service_create_time DESC 
+  </select>
+  
+  
+  <select id="getServiceZHListByType" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select 
+    <include refid="Base_Column_List" />
+  
+    from ossh_service where type_id=#{#id} 
+    ORDER BY collection_count DESC LIMIT 10
+  </select>
+  
+  <select id="getServiceZHListByTypeNoLimit" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select 
+    <include refid="Base_Column_List" />
+  
+    from ossh_service where type_id=#{#id} 
+    ORDER BY collection_count DESC 
+  </select>
+  <select id="getServiceByQB" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select 
+    <include refid="Base_Column_List" />
+  
+    from ossh_service where type_id=#{#id} 
+    ORDER BY service_name 
+  </select>
+  
+  <select id="getServiceByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+	SELECT os.service_id,os.service_name,os.service_adress  
+	from ossh_user_role our 
+	LEFT JOIN ossh_service os 
+	ON our.role_id = os.role_id
+	where our.user_id=#{#userId}
+  </select>
+  
+  <select id="getMycollectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+	SELECT os.service_id,os.service_name,os.service_adress  
+	from ossh_user_collection c
+	LEFT JOIN ossh_service os 
+	ON c.service_id = os.service_id
+	where c.user_id=#{#userId}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ossh_service
+    where service_id = #{serviceId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.udata.osp.entity.Service" >
+    insert into ossh_service (service_id, service_name, service_adress, 
+      service_praise_number, service_use_number, 
+      service_browse_number, service_create_time, service_author, 
+      type_id, service_icon)
+    values (#{serviceId,jdbcType=INTEGER}, #{serviceName,jdbcType=VARCHAR}, #{serviceAdress,jdbcType=VARCHAR}, 
+      #{servicePraiseNumber,jdbcType=INTEGER}, #{serviceUseNumber,jdbcType=INTEGER}, 
+      #{serviceBrowseNumber,jdbcType=INTEGER}, #{serviceCreateTime,jdbcType=DATE}, #{serviceAuthor,jdbcType=VARCHAR}, 
+      #{typeId,jdbcType=INTEGER}, #{serviceIcon,jdbcType=LONGVARBINARY})
+  </insert>
+  <insert id="insertSelective" parameterType="com.udata.osp.entity.Service" >
+    insert into ossh_service
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serviceId != null" >
+        service_id,
+      </if>
+      <if test="serviceName != null" >
+        service_name,
+      </if>
+      <if test="serviceAdress != null" >
+        service_adress,
+      </if>
+      <if test="servicePraiseNumber != null" >
+        service_praise_number,
+      </if>
+      <if test="serviceUseNumber != null" >
+        service_use_number,
+      </if>
+      <if test="serviceBrowseNumber != null" >
+        service_browse_number,
+      </if>
+      <if test="serviceCreateTime != null" >
+        service_create_time,
+      </if>
+      <if test="serviceAuthor != null" >
+        service_author,
+      </if>
+      <if test="typeId != null" >
+        type_id,
+      </if>
+      <if test="serviceIcon != null" >
+        service_icon,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serviceId != null" >
+        #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceName != null" >
+        #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceAdress != null" >
+        #{serviceAdress,jdbcType=VARCHAR},
+      </if>
+      <if test="servicePraiseNumber != null" >
+        #{servicePraiseNumber,jdbcType=INTEGER},
+      </if>
+      <if test="serviceUseNumber != null" >
+        #{serviceUseNumber,jdbcType=INTEGER},
+      </if>
+      <if test="serviceBrowseNumber != null" >
+        #{serviceBrowseNumber,jdbcType=INTEGER},
+      </if>
+      <if test="serviceCreateTime != null" >
+        #{serviceCreateTime,jdbcType=DATE},
+      </if>
+      <if test="serviceAuthor != null" >
+        #{serviceAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="typeId != null" >
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceIcon != null" >
+        #{serviceIcon,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.udata.osp.entity.Service" >
+    update ossh_service
+    <set >
+      <if test="serviceName != null" >
+        service_name = #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceAdress != null" >
+        service_adress = #{serviceAdress,jdbcType=VARCHAR},
+      </if>
+      <if test="servicePraiseNumber != null" >
+        service_praise_number = #{servicePraiseNumber,jdbcType=INTEGER},
+      </if>
+      <if test="serviceUseNumber != null" >
+        service_use_number = #{serviceUseNumber,jdbcType=INTEGER},
+      </if>
+      <if test="serviceBrowseNumber != null" >
+        service_browse_number = #{serviceBrowseNumber,jdbcType=INTEGER},
+      </if>
+      <if test="serviceCreateTime != null" >
+        service_create_time = #{serviceCreateTime,jdbcType=DATE},
+      </if>
+      <if test="serviceAuthor != null" >
+        service_author = #{serviceAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="typeId != null" >
+        type_id = #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceIcon != null" >
+        service_icon = #{serviceIcon,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where service_id = #{serviceId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.udata.osp.entity.Service" >
+    update ossh_service
+    set service_name = #{serviceName,jdbcType=VARCHAR},
+      service_adress = #{serviceAdress,jdbcType=VARCHAR},
+      service_praise_number = #{servicePraiseNumber,jdbcType=INTEGER},
+      service_use_number = #{serviceUseNumber,jdbcType=INTEGER},
+      service_browse_number = #{serviceBrowseNumber,jdbcType=INTEGER},
+      service_create_time = #{serviceCreateTime,jdbcType=DATE},
+      service_author = #{serviceAuthor,jdbcType=VARCHAR},
+      type_id = #{typeId,jdbcType=INTEGER},
+      service_icon = #{serviceIcon,jdbcType=LONGVARBINARY}
+    where service_id = #{serviceId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.udata.osp.entity.Service" >
+    update ossh_service
+    set service_name = #{serviceName,jdbcType=VARCHAR},
+      service_adress = #{serviceAdress,jdbcType=VARCHAR},
+      service_praise_number = #{servicePraiseNumber,jdbcType=INTEGER},
+      service_use_number = #{serviceUseNumber,jdbcType=INTEGER},
+      service_browse_number = #{serviceBrowseNumber,jdbcType=INTEGER},
+      service_create_time = #{serviceCreateTime,jdbcType=DATE},
+      service_author = #{serviceAuthor,jdbcType=VARCHAR},
+      type_id = #{typeId,jdbcType=INTEGER}
+    where service_id = #{serviceId,jdbcType=INTEGER}
+  </update>
+  
+  
+  	 <update id="updatePraiseCount"  >
+	    update ossh_service
+	    set praise_count = #{1}
+	    where service_id = #{0}
+	  </update>
+	  
+
+  <select id="getServiceAllZHList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ossh_service 
+    ORDER BY type_id DESC ,role_id  desc,uses_count desc
+  </select>
+  
+   <cache    eviction="LRU"   flushInterval="600000" size="712" readOnly="true"/> 
+  
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.udata.osp.dao.SysRoleForServiceUl" >
+  <resultMap id="BaseResultMap" type="com.udata.osp.entity.ServiceRole" >
+    <id column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="RIGHTS" property="rights" jdbcType="VARCHAR" />
+    <result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+    <result column="ADD_QX" property="addQx" jdbcType="VARCHAR" />
+    <result column="DEL_QX" property="delQx" jdbcType="VARCHAR" />
+    <result column="EDIT_QX" property="editQx" jdbcType="VARCHAR" />
+    <result column="CHA_QX" property="chaQx" jdbcType="VARCHAR" />
+    <result column="QX_ID" property="qxId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ROLE_ID, ROLE_NAME, RIGHTS, PARENT_ID, ADD_QX, DEL_QX, EDIT_QX, CHA_QX, QX_ID
+  </sql>
+  
+  <select id="getServiceUlList" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_role 
+    where PARENT_ID = -1
+  </select>
+  
+  <select id="getSysRole" resultType="com.udata.osp.entity.ServiceRole" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_role 
+    where ROLE_ID = #{#roleId}
+  </select>
+  
+  
+     <cache    eviction="LRU"   flushInterval="60000" size="512" readOnly="true"/>
+  
+</mapper>

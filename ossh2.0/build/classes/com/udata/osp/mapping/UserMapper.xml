@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.udata.osp.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.udata.osp.entity.User" >
+    <id column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="USERNAME" property="username" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="RIGHTS" property="rights" jdbcType="VARCHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+    <result column="LAST_LOGIN" property="lastLogin" jdbcType="VARCHAR" />
+    <result column="IP" property="ip" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="SKIN" property="skin" jdbcType="VARCHAR" />
+    <result column="EMAIL" property="email" jdbcType="VARCHAR" />
+    <result column="NUMBER" property="number" jdbcType="VARCHAR" />
+    <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMapService" type="com.udata.osp.entity.Service" >
+    <id column="service_id" property="serviceId" jdbcType="INTEGER" />
+    <result column="service_name" property="serviceName" jdbcType="VARCHAR" />
+    <result column="service_adress" property="serviceAdress" jdbcType="VARCHAR" />
+    <result column="service_praise_number" property="servicePraiseNumber" jdbcType="INTEGER" />
+    <result column="service_use_number" property="serviceUseNumber" jdbcType="INTEGER" />
+    <result column="service_browse_number" property="serviceBrowseNumber" jdbcType="INTEGER" />
+    <result column="service_create_time" property="serviceCreateTime" jdbcType="DATE" />
+    <result column="service_author" property="serviceAuthor" jdbcType="VARCHAR" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+    
+    <result column="comment_count" property="comment_count" jdbcType="INTEGER" />
+    <result column="praise_count" property="praise_count" jdbcType="INTEGER" />
+    <result column="collection_count" property="collection_count" jdbcType="INTEGER" />
+ 
+   
+   
+  </resultMap>
+  
+  
+  
+    <resultMap id="BaseResultMapRole" type="com.udata.osp.entity.ServiceRole" >
+    <id column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="RIGHTS" property="rights" jdbcType="VARCHAR" />
+    <result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+    <result column="ADD_QX" property="addQx" jdbcType="VARCHAR" />
+    <result column="DEL_QX" property="delQx" jdbcType="VARCHAR" />
+    <result column="EDIT_QX" property="editQx" jdbcType="VARCHAR" />
+    <result column="CHA_QX" property="chaQx" jdbcType="VARCHAR" />
+    <result column="QX_ID" property="qxId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+  
+   
+  
+  
+  
+  <sql id="Base_Column_List" >
+    USER_ID, USERNAME, PASSWORD, NAME, RIGHTS, ROLE_ID, LAST_LOGIN, IP, STATUS, BZ, SKIN, 
+    EMAIL, NUMBER, PHONE
+  </sql>
+  
+   <sql id="Base_Column_List_Service" >
+    service_id, service_name, service_adress, service_praise_number, service_use_number, 
+    service_browse_number, service_create_time, service_author, type_id,role_id,
+    service_time,service_detail,comment_count,praise_count,collection_count 
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_user
+    where USERNAME = #{0} AND PASSWORD = #{1}  limit 0,1
+  </select>
+  
+   <select id="getUserRole" resultMap="BaseResultMapRole" parameterType="java.lang.String" >
+    select 
+     *
+    from ossh_user_role
+    where user_id = #{0} 
+  </select>
+  
+  <select id="getServiceZXListInRole" resultMap="BaseResultMapService"  >
+    select 
+     *
+    from ossh_service   s
+        where  s.role_id in
+        <foreach collection="list" item="userRole" index="index"
+            open="(" close=")" separator=",">
+            #{userRole.role_id}
+        </foreach>
+        ORDER BY service_create_time DESC LIMIT 18
+        
+  </select>
+  
+  
+  <select id="getServiceZHListInRole" resultMap="BaseResultMapService"  >
+    select 
+     *
+    from ossh_service   s
+        where  s.role_id in
+        <foreach collection="list" item="userRole" index="index"
+            open="(" close=")" separator=",">
+            #{userRole.role_id}
+        </foreach>
+         ORDER BY service_use_number DESC LIMIT 18
+        
+  </select>
+  
+  
+  
+  
+  
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from sys_user
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.udata.osp.entity.User" >
+    insert into sys_user (USER_ID, USERNAME, PASSWORD, 
+      NAME, RIGHTS, ROLE_ID, 
+      LAST_LOGIN, IP, STATUS, 
+      BZ, SKIN, EMAIL, NUMBER, 
+      PHONE)
+    values (#{userId,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{rights,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, 
+      #{lastLogin,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{bz,jdbcType=VARCHAR}, #{skin,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.udata.osp.entity.User" >
+    insert into sys_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="username != null" >
+        USERNAME,
+      </if>
+      <if test="password != null" >
+        PASSWORD,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="rights != null" >
+        RIGHTS,
+      </if>
+      <if test="roleId != null" >
+        ROLE_ID,
+      </if>
+      <if test="lastLogin != null" >
+        LAST_LOGIN,
+      </if>
+      <if test="ip != null" >
+        IP,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="bz != null" >
+        BZ,
+      </if>
+      <if test="skin != null" >
+        SKIN,
+      </if>
+      <if test="email != null" >
+        EMAIL,
+      </if>
+      <if test="number != null" >
+        NUMBER,
+      </if>
+      <if test="phone != null" >
+        PHONE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="rights != null" >
+        #{rights,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLogin != null" >
+        #{lastLogin,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="bz != null" >
+        #{bz,jdbcType=VARCHAR},
+      </if>
+      <if test="skin != null" >
+        #{skin,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.udata.osp.entity.User" >
+    update sys_user
+    <set >
+      <if test="username != null" >
+        USERNAME = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        PASSWORD = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="rights != null" >
+        RIGHTS = #{rights,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        ROLE_ID = #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLogin != null" >
+        LAST_LOGIN = #{lastLogin,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        IP = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="bz != null" >
+        BZ = #{bz,jdbcType=VARCHAR},
+      </if>
+      <if test="skin != null" >
+        SKIN = #{skin,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        EMAIL = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        NUMBER = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        PHONE = #{phone,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.udata.osp.entity.User" >
+    update sys_user
+    set USERNAME = #{username,jdbcType=VARCHAR},
+      PASSWORD = #{password,jdbcType=VARCHAR},
+      NAME = #{name,jdbcType=VARCHAR},
+      RIGHTS = #{rights,jdbcType=VARCHAR},
+      ROLE_ID = #{roleId,jdbcType=VARCHAR},
+      LAST_LOGIN = #{lastLogin,jdbcType=VARCHAR},
+      IP = #{ip,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      BZ = #{bz,jdbcType=VARCHAR},
+      SKIN = #{skin,jdbcType=VARCHAR},
+      EMAIL = #{email,jdbcType=VARCHAR},
+      NUMBER = #{number,jdbcType=VARCHAR},
+      PHONE = #{phone,jdbcType=VARCHAR}
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </update>
+  
+  
+
+   <update id="savePassword" parameterType="java.lang.String" >
+    update sys_user
+    set
+      PASSWORD = #{1}
+    where USER_ID = #{0}
+  </update>
+  
+  <insert id="bindEmail" parameterType="java.lang.String">
+		  <selectKey keyProperty="count" resultType="int" order="BEFORE">
+		    select count(*) from ossh_email where user_id = #{0}
+		  </selectKey>
+	  <if test="count > 0">
+	    update ossh_email 
+	    set email_account = #{1},
+	    email_password = #{2}
+	    where user_id = #{0}
+	  </if>
+	  <if test="count==0">
+	     INSERT INTO ossh_email  
+	    (user_id,email_account,email_password)  
+	    VALUES  
+	    (#{0}, #{1},#{2}) 
+	  </if>
+	</insert>
+	
+  
+  
+  
+  
+  
+  
+   <update id="saveOrder" parameterType="java.lang.String" >
+    update sys_user
+    set
+      center_order = #{1}
+    where USER_ID = #{0}
+  </update>
+  
+  
+ 
+  
+   <select id="getUserOrder" resultType="java.lang.String" parameterType="java.lang.String" >
+    select  center_order
+    <include refid="Base_Column_List" />
+    from sys_user
+    where USER_ID = #{0}
+  </select>
+  
+  
+   <select id="getSearchProjectByUserId" resultType="java.util.HashMap"  >
+       select *  from ossh_research_project  where user_id=#{0}  and type=#{1}
+    </select>
+    
+    
+    
+     <select id="CountResearchProject" resultType="java.util.HashMap"  >
+      select user_id, project_type,  user_type, count(project_type) as  ct   from ossh_research_project_data  where  user_id=#{0} group by  project_type,  user_type
+    </select>
+    
+    
+ <select id="findResearchProject" resultType="com.udata.osp.entity.ResearchProject"  >
+    select  * from  ossh_research_project
+     where user_id = #{0} AND type = #{1}
+  </select>
+  
+  
+   <insert id="addResearchProject" parameterType="com.udata.osp.entity.ResearchProject" >
+    insert into ossh_research_project (user_id,country,province,city,other,type)
+    values (#{user_id,jdbcType=VARCHAR}, #{country,jdbcType=INTEGER},#{province,jdbcType=INTEGER},#{city,jdbcType=INTEGER},#{other,jdbcType=INTEGER},#{type,jdbcType=INTEGER})
+  </insert>
+  
+  
+  <update id="changeResearchProject" parameterType="com.udata.osp.entity.ResearchProject" >
+    update ossh_research_project
+    set
+      country = #{country,jdbcType=INTEGER},
+      province=#{province,jdbcType=INTEGER},
+      city=#{city,jdbcType=INTEGER},
+      other=#{other,jdbcType=INTEGER},
+      type=#{type,jdbcType=INTEGER}      
+     where user_id = #{user_id,jdbcType=VARCHAR}  and  type=#{type,jdbcType=INTEGER}
+  </update>
+  
+  
+    <select id="getUserIdInResearchProjectData" resultType="java.lang.String"  >
+    select  distinct user_id from  ossh_research_project_data 
+  </select>
+  
+  
+  
+  
+   <select id="getAchievementsByUserId" resultType="java.util.HashMap"  >
+       select user_id, type, count(type) as  ct   from ossh_achievements_data  where  user_id=#{0} group by type
+   </select>
+   
+   <select id="getFinanceByUserId" resultType="java.util.HashMap"  >
+       select user_id, type, count(type) as  ct   from ossh_finance_data  where  user_id=#{0} group by type
+   </select>
+   
+    <select id="getGuideByUserId" resultType="java.util.HashMap"  >
+       select user_id, student_type, count(student_type) as  ct   from ossh_guide_student_data  where  user_id=#{0} group by student_type
+   </select>
+   
+    <select id="getFundingByUserId" resultType="java.util.HashMap"  >
+       select user_id, type, count(type) as  ct   from ossh_funding_data  where  user_id=#{0} group by type
+   </select>
+   
+   <select id="getThroughTrain" resultType="java.util.HashMap"  >
+       select id, business_name,url   from ossh_through_train
+   </select>
+   
+   <select id="getThroughTrainImg" resultType="java.util.HashMap"  >
+       select icon    from ossh_through_train where  id= #{0}
+   </select>
+   
+    <select id="getBannerList" resultType="java.util.HashMap"  >
+       select banner_id   from ossh_banner
+   </select>
+   
+   
+    <select id="getBannerImg" resultType="java.util.HashMap"  >
+       select banner_icon    from ossh_banner where  banner_id= #{0}
+   </select>
+   
+   
+   <select id="getCommentCountByServiceId" resultType="java.util.HashMap">
+   	select  count(*) as  ct   from ossh_user_comment  where service_id=#{0}
+   </select>
+    
+    
+    
+    <update id="changeServiceComment"  >
+    update ossh_service
+    set
+      comment_count = #{1}   
+     where service_id = #{0} 
+  </update>
+    
+    
+    
+   <select id="getUserRecord" resultType="java.util.HashMap"  >
+       select   *  from ossh_staff_record  where  user_id= #{0}    
+   </select>
+   
+   <select id="userLearning" resultType="java.util.HashMap"  >
+       select   *  from ossh_learning_experience  where  user_id= #{0}  order by  orders  
+   </select>
+   
+   
+    <update id="setLearningOrderById"  >
+    update ossh_learning_experience
+    set
+      orders = #{1}
+     where id = #{0}  
+  </update>
+   
+   
+   <select id="getUserJobs" resultType="java.util.HashMap"  >
+       select   *  from ossh_job  where  user_id= #{0}    
+   </select>
+   
+   <select id="getUserRanks" resultType="java.util.HashMap"  >
+       select   *  from ossh_rank  where  user_id= #{0}    
+   </select>
+   
+   
+   <select id="getUserActualInformation" resultType="java.util.HashMap"  >
+       select   *  from ossh_ex_jzg  where  id= #{0}    
+   </select>
+   
+    <select id="getQualification" resultType="java.util.HashMap"  >
+       select   *  from ossh_personal_qualitification    where  user_id= #{0}    
+   </select>
+   
+   
+   <select id="getWorkInformation" resultType="java.util.HashMap"  >
+       select   *  from ossh_work_experience_data    where  user_id= #{0}   ORDER BY start_date DESC 
+   </select>
+   
+   <select id="getStudyInformation" resultType="java.util.HashMap"  >
+       select   *  from ossh_study_experience_data    where  user_id= #{0}   ORDER BY start_date DESC 
+   </select>
+   
+   <select id="getPostInformation" resultType="java.util.HashMap"  >
+       select   *  from ossh_job_data    where  user_id= #{0}   ORDER BY start_date DESC 
+   </select>
+   
+   <select id="getTitleInformation" resultType="java.util.HashMap"  >
+       select   *  from ossh_personal_title    where  user_id= #{0}   ORDER BY start_date DESC 
+   </select>
+   
+   <select id="getResearch" resultType="java.util.HashMap"  >
+       select   *  from ossh_personal_research_project    where  user_id= #{0}   ORDER BY date DESC 
+   </select>
+  
+   
+   
+   <select id="getPatent" resultType="java.util.HashMap"  >
+       select   *  from ossh_personal_patent    where  user_id= #{0}   ORDER BY ranking
+   </select>
+   
+   
+   
+   <select id="getDevice" resultType="java.util.HashMap"  >
+       select   *  from ossh_personal_device    where  user_id= #{0}   ORDER BY code
+   </select>
+   
+   <select id="getDeviceAndCondition" resultType="java.util.HashMap"   parameterType="Map">
+       select   *  from ossh_personal_device   where 1=1  
+        <if test="user_id!=''"> and user_id=#{user_id}</if>  
+        <if test="code!=''"> and prod_id=#{code}</if>  
+        <if test="name!=''"> and ch_id=#{name}</if>  
+        <if test="number!=''"> number=#{number} </if>  
+        <if test="unit_price!=''"> and unit_price=#{unit_price}   </if>  
+	   ORDER BY code
+   </select>
+   
+  <select id="getDeviceAndCondition2" resultType="java.util.HashMap"   parameterType="java.util.Map">
+       select   *  from ossh_personal_device   where 1=1 
+        <!-- 由于标签就是由<>组成的，在xml文件中是具有特殊含义的字符，在解析xml时发生错误，解析器xmlcdata块中是普通的字符 -->
+        <!-- ${key}默认字符  #{key}默认数字  或者指定 #{studentBirthday, jdbcType=DATE}  -->        
+        <foreach collection="params.keys" item="key" open=" " close=" " separator=" " >  
+             <![CDATA[   and ${key} =   #{params[${key}]}     ]]> 
+         </foreach>  
+         
+         
+	   ORDER BY code
+   </select>
+   
+    <select id="getDeviceAndCondition3" resultType="java.util.HashMap"   parameterType="java.util.Map">
+       select   *  from ossh_personal_device   where 1=1 
+        <!-- 由于标签就是由<>组成的，在xml文件中是具有特殊含义的字符，在解析xml时发生错误，解析器xmlcdata块中是普通的字符 -->
+        <!-- ${key}默认字符  #{key}默认数字  或者指定 #{studentBirthday, jdbcType=DATE}  -->        
+        <foreach collection="params.keys" item="key" open=" " close=" " separator=" " >  
+        
+        
+             <![CDATA[   and ${key} like   concat(concat('%',#{params[${key}]}),'%')     ]]> 
+         </foreach>  
+         
+         
+	   ORDER BY code
+   </select>
+   
+   
+   <select id="getFinance" resultType="java.util.HashMap"  >
+       select   *  from ossh_personal_finance    where  user_id= #{0}   ORDER BY date  desc
+   </select>
+   
+   
+   <select id="getHealth" resultType="java.util.HashMap"  >
+       select   *  from ossh_personal_health    where  user_id= #{0}   ORDER BY  date desc, project desc
+   </select>
+   
+   
+   <select   id="getUserIsStudent"  resultType="java.util.HashMap"  >
+		 SELECT ossh_user_role.user_id,sys_role.ROLE_NAME
+		FROM ossh_user_role,sys_role,sys_user
+		WHERE sys_user.user_id=ossh_user_role.user_id AND ossh_user_role.role_id=sys_role.role_id AND sys_user.user_id=#{0}  AND sys_role.role_name='学生服务'
+	</select> 
+	
+	 <select   id="getFirstWerks"  resultType="java.util.HashMap"  >
+		 SELECT *
+		FROM ossh_personal_first_term_weeks
+	</select> 
+	 
+	<select id="getSchedules" resultType="java.util.HashMap"  >
+       select   *  from ex_bzks_kcapxx    where  jsgh= #{0}   and ( xn=#{1}  or  xn=#{2})
+   </select>
+   <select id="getStudentSchedules" resultType="java.util.HashMap"  >
+      	 select   ex_bzks_kcapxx.*  from  ex_bzks_kcapxx  
+		inner join ex_bzks_xzb   on  ex_bzks_xzb.BJMC= ex_bzks_kcapxx.BJMC  
+		inner  join  ossh_ex_bks on ossh_ex_bks.bh = ex_bzks_xzb.bh and  ossh_ex_bks.id=#{0}   and ( ex_bzks_kcapxx.xn=#{1}  or  ex_bzks_kcapxx.xn=#{2})
+
+   </select>
+   
+   
+   
+   <select id="getBasicStudentInformation" resultType="java.util.HashMap"  >
+       select   *  from t_bzks    where  XH= #{0}   
+   </select>
+   
+   
+   <select id="getTuitionInformation" resultType="java.util.HashMap"  >
+       select   *  from ex_xs_sfzz    where  XH= #{0}    order by SFQJDM    desc ,YJJE  desc
+   </select>
+   
+   
+   <select id="getCampusConsumption" resultType="java.util.HashMap"  >
+       select   *  from EX_YKT_GRJY    where  SFRZH= #{0}    order by JYRQ    desc ,JYSJ  desc
+   </select>
+   
+   
+   
+   <select id="getBooksArrearage" resultType="java.util.HashMap"  >
+       select   *  from t_ts_qf    where  SFRZH= #{0}    order by JLRQ    desc ,JLZMR  desc
+   </select>
+   
+   
+   <select id="getT_JZG_RZ" resultType="java.util.HashMap"  >
+       select   *  from t_jzg_rz    where  zgh= #{0}    
+   </select>
+   
+   
+ 
+   <insert id="savePersonalImage" parameterType="Map">  
+	    INSERT INTO ossh_user_image  
+	    (user_id,image)  
+	    VALUES  
+	    (#{ID}, #{FILE,jdbcType=BLOB}) 
+	</insert>  
+	
+	
+	<insert id="saveOrUpdatePersonalImage" parameterType="Map">
+		  <selectKey keyProperty="count" resultType="int" order="BEFORE">
+		    select count(*) from ossh_user_image where user_id = #{ID}
+		  </selectKey>
+	  <if test="count > 0">
+	    update ossh_user_image 
+	    set image = #{FILE,jdbcType=BLOB}
+	    where user_id = #{ID}
+	  </if>
+	  <if test="count==0">
+	     INSERT INTO ossh_user_image  
+	    (user_id,image)  
+	    VALUES  
+	    (#{ID}, #{FILE,jdbcType=BLOB}) 
+	  </if>
+	</insert>
+	
+	
+   <select id="getUserImgById" resultType="java.util.HashMap"  >
+       select   *  from ossh_user_image    where  user_id= #{0}  
+   </select>
+   
+   
+   <delete id="emptyImage" >  
+        DELETE FROM ossh_user_image WHERE  user_id= #{0}    
+   </delete> 
+   
+   
+   
+   <select id="getDeaultImg" resultType="java.util.HashMap"  >
+       select   *  from ossh_user_image    where  user_id= '-1' 
+   </select>
+   
+   
+    <select id="getJtgxInformation" resultType="java.util.HashMap"  >
+       select   *  from t_bzks_jtcy    where  XH= #{0}  
+   </select>
+   
+    <select id="getXXCJ" resultType="java.util.HashMap"  >
+      
+       SELECT a.*  ,b.xkkch  as  xkkch2,b.KCMC  as  KCMC FROM 
+	   (SELECT * FROM t_bzks_kscj WHERE xh= #{0} order by XN    desc ,XQDM  desc ,KCDM  desc)as a
+		left JOIN ex_coursename  as b ON a.XKKCH = b.XKKCH
+  
+   </select>
+   
+   
+   
+   
+   <select id="getDjxs" resultType="java.util.HashMap"  >
+       select   *  from t_bzks_djks    where  XH= #{0}  
+   </select>
+   
+   
+    <select id="getBooksArrearage2" resultType="java.util.HashMap"  >
+        select   *  from t_ts_qf    where  SFRZH= #{0}    order by JLRQ    desc ,JLZMR  desc 
+   </select>
+   
+   
+   
+
+		
+   <select id="getStatementsByUserId" resultType="java.util.HashMap"  parameterType="java.util.Map" statementType="STATEMENT">  
+		   <![CDATA[ 
+		         select   *  from  ${params.tableName}  where 
+		        ${params.userIdField}  = ${params.userId}   ${params.other}]]>     
+     
+   </select>
+   
+   
+    <select id="getServiceAllList" resultMap="BaseResultMapService"   parameterType="java.lang.String" >  
+		   
+		select 
+		  <include refid="Base_Column_List_Service" />
+		from   ossh_service
+		where   role_id  in(
+		select role_id   from ossh_user_role  where  user_id= #{user_id,jdbcType=VARCHAR})
+ 		ORDER BY type_id DESC ,role_id  desc,uses_count desc
+   </select>
+   
+   
+   <select id="getJxgzlInformation" resultType="java.util.HashMap"  >
+       select   *  from ossh_ex_jxgzl    where  GH= #{0}  order  by   NF desc  
+   </select>
+   
+   
+   <select id="getT_jzg" resultType="java.util.HashMap"  >
+      select  *  from t_jzg   where  zgh= #{0}  
+   </select>
+   
+   
+   
+   <select id="getResearchFromThree" resultType="java.util.HashMap"  >
+   select * from(
+		select `XMBH`, `XMMC`, `ND`, `DWMC`, `ZGH`,`type`
+		from (select `hx_i1`.`XMBH` AS `XMBH`,`hx_i1`.`XMMC` AS `XMMC`,
+		`hx_i1`.`ND` AS `ND`,`hx_i1`.`DWMC` AS `DWMC`,`cy`.`ZGH` AS `ZGH`,
+		'横向' AS `type` from (`t_ky_hxxm` `hx_i1` inner join `t_ky_hxxmcy` `cy` on((`cy`.`XMZJ` = `hx_i1`.`WID` and cy.ZGH=#{0})))) `hx`
+		 union all
+		 select  `XMBH`, `XMMC`, `ND`, `DWMC`,`ZGH`, `type` from 
+		 (select `zx_i1`.`XMBH` AS `XMBH`,`zx_i1`.`XMMC` AS `XMMC`,`zx_i1`.`ND` AS `ND`,`zx_i1`.`DWMC` AS `DWMC`,`cy`.`ZGH` AS `ZGH`,'纵向' AS `type` 
+		 from (`t_ky_zxxm` `zx_i1` inner join `t_ky_zxxmcy` `cy` on((`cy`.`XMZJ` = `zx_i1`.`WID` and cy.ZGH=#{0})))) `zx`
+		 
+		  union all
+		 select  `XMBH`, `XMMC`, `ND`, `DWMC`,ZGH, `type` from 
+		 (select `zx_i1`.`XMBH` AS `XMBH`,`zx_i1`.`XMMC` AS `XMMC`,`zx_i1`.`ND` AS `ND`,`zx_i1`.`DWMC` AS `DWMC`,`cy`.`ZGH` AS `ZGH`,'校际' AS `type` 
+		 from (`T_KY_XJXM` `zx_i1` inner join`T_KY_XJXMCY` `cy` on((`cy`.`XMZJ` = `zx_i1`.`WID` and cy.ZGH=#{0})))) `xj` 
+    ) as  tmp  order by tmp.ND desc
+
+   </select>
+   
+   
+  <select id="getKYLW" resultType="java.util.HashMap"  >
+	select  `zx_i1`.`LWMC`, zx_i1.`LWYWMC`,zx_i1.`FBRQ`,zx_i1.ISSN
+		 from 
+              `T_KY_LW` `zx_i1` inner join `T_KY_LW_RY` `cy`
+               on(
+                    (`cy`.`WID` = `zx_i1`.`WID` and `cy`.ZGH=#{0})
+                 )
+
+   </select>
+   
+   
+   <select id="getSJZZ" resultType="java.util.HashMap"  >
+	select  `zx_i1`.`ZZMC`, zx_i1.`LZLBDM`,zx_i1.`CBSMC`,zx_i1.ISBN
+		 from 
+              `T_KY_zz` `zx_i1` inner join `T_KY_ZZ_CY` `cy`
+               on(
+                    (`cy`.`WID` = `zx_i1`.`WID` and `cy`.ZGH=#{0})
+                 )  order by ISBN desc
+
+   </select>
+   
+   
+    <select id="getRJZZ" resultType="java.util.HashMap"  >
+	 select  `zx_i1`.`DJH`, zx_i1.`ZZQR`,zx_i1.`DJRQ`
+		 from 
+              `T_KY_RJZZQ` `zx_i1` inner join `T_KY_RJZZQCY` `cy`
+               on(
+                    (`cy`.`RJZZQZJ` = `zx_i1`.`WID` and `cy`.ZGH=#{0})
+                 )  order by DJRQ desc
+
+   </select>
+   
+   
+   <select id="getHJQK" resultType="java.util.HashMap"  >
+	 select  `zx_i1`.`JLMC`, zx_i1.`CGMC`,zx_i1.`HJRQ`,zx_i1.`HJJBDM`
+	        ,zx_i1.`SJDJDM`,zx_i1.`SJDW`,zx_i1.`WCDW`
+		 from 
+              `T_KY_CGHJ` `zx_i1` inner join `T_KY_CGHJCY` `cy`
+               on(
+                    (`cy`.`HJZJ` = `zx_i1`.`WID` and `cy`.ZGH=#{0})
+                 )  order by HJRQ desc
+
+   </select>
+   
+   
+   <select id="getPatent2" resultType="java.util.HashMap"  >
+	 select  `zx_i1`.`ZLSQRQ`, zx_i1.`ZLQR`,zx_i1.`ZLZT`,zx_i1.`SQZLH`
+		 from 
+              `T_KY_ZL` `zx_i1` inner join `T_KY_ZLCY` `cy`
+               on(
+                    (`cy`.`ZLZJ` = `zx_i1`.`WID` and `cy`.ZGH=#{0})
+                 )  order by ZLSQRQ desc
+
+   </select>
+   
+   
+
+   <cache    eviction="LRU"   flushInterval="60000" size="512" readOnly="true"/> 
+ 
+  
+</mapper>
